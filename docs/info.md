@@ -42,8 +42,5 @@ If you don’t want to run all 256 inputs, you can just test a few key cases:
 * 11001010 → not symmetric → S = 0
 * 00011000 → not symmetric → S = 0
 
----
-
-In short: the easiest way is to *run the testbench* and confirm that the errors signal remains 0 after simulation.
 ## External hardware
 LED , Push Button
