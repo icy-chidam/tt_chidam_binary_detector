@@ -5,23 +5,42 @@
 
 `default_nettype none
 
-module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+module tt_um_symmetry_detector (
+    input  wire [7:0] ui_in,    // dedicated inputs
+    output wire [7:0] uo_out,   // dedicated outputs
+    input  wire [7:0] uio_in,   // bidirectional inputs (unused)
+    output wire [7:0] uio_out,  // bidirectional outputs (unused)
+    output wire [7:0] uio_oe,   // bidirectional enables (unused)
+    input  wire       clk,
+    input  wire       rst_n
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    // Map control + data
+    wire        load    = ui_in[0];   // LSB = load pulse
+    wire [7:0]  data_in = ui_in;      // use all 8 bits as input word
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    wire symmetry, done, busy;
+
+    // Instantiate core
+    trial_symmetry_detector #(
+        .N(8)
+    ) core (
+        .clk(clk),
+        .rst_n(rst_n),
+        .load(load),
+        .data_in(data_in),
+        .symmetry(symmetry),
+        .done(done),
+        .busy(busy)
+    );
+
+    // Map outputs
+    assign uo_out[0]   = symmetry;
+    assign uo_out[1]   = done;
+    assign uo_out[2]   = busy;
+    assign uo_out[7:3] = 5'b00000; // unused
+
+    assign uio_out = 8'b00000000; // no bidir used
+    assign uio_oe  = 8'b00000000;
 
 endmodule
