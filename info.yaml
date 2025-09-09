@@ -23,20 +23,20 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs (8-bit data to check symmetry)
-  ui[0]: "A"
-  ui[1]: "B"
-  ui[2]: "C"
-  ui[3]: "D"
-  ui[4]: "E"
-  ui[5]: "F"
-  ui[6]: "G"
-  ui[7]: "H"
+  ui[0]: "i[0]"
+  ui[1]: "i[1]"
+  ui[2]: "i[2]"
+  ui[3]: "i[3]"
+  ui[4]: "i[4]"
+  ui[5]: "i[5]"
+  ui[6]: "i[6]"
+  ui[7]: "i[7]"
 
   # Outputs
-  uo[0]: "M"
-  uo[1]: "N"
-  uo[2]: "O"
-  uo[3]: "P"
+  uo[0]: "out"
+  uo[1]: "mismatch_count[2]"
+  uo[2]: "mismatch_count[1]"
+  uo[3]: "mismatch_count[0]"
   uo[4]: ""
   uo[5]: ""
   uo[6]: ""
