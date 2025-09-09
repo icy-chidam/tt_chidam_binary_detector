@@ -37,10 +37,10 @@ pinout:
   uo[1]: "N"
   uo[2]: "O"
   uo[3]: "P"
-  uo[4]: "Unused (constant 0)"
-  uo[5]: "Unused (constant 0)"
-  uo[6]: "Unused (constant 0)"
-  uo[7]: "Unused (constant 0)"
+  uo[4]: ""
+  uo[5]: ""
+  uo[6]: ""
+  uo[7]: ""
 
   # Bidirectional pins (not used)
   uio[0]: ""
