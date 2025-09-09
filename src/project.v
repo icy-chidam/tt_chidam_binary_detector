@@ -52,6 +52,10 @@ module symmetry_detector(out, mismatch_count, i);
   and a2(w[5], ~w[2], ~w[3]);
   and a3(out, w[4], w[5]);
   
-  assign mismatch_count = w[0] + w[1] + w[2] + w[3];
+assign mismatch_count = {2'b00, w[0]} +
+                        {2'b00, w[1]} +
+                        {2'b00, w[2]} +
+                        {2'b00, w[3]};
+
   
 endmodule
