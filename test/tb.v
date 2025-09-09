@@ -38,12 +38,12 @@ module tb;
         #20; // wait for DUT to process
 
         if (uo_out[0] !== expected_sym || uo_out[3:1] !== expected_mismatch) begin
-            $display("❌ ERROR: Input=%b | Expected sym=%b mismatch=%0d | Got sym=%b mismatch=%0d",
+            $display("ERROR: Input=%b | Expected sym=%b mismatch=%0d | Got sym=%b mismatch=%0d",
                      din, expected_sym, expected_mismatch,
                      uo_out[0], uo_out[3:1]);
             $fatal; // Fail immediately
         end else begin
-            $display("✅ PASS: Input=%b | Sym=%b, Mismatch=%0d",
+            $display("PASS: Input=%b | Sym=%b, Mismatch=%0d",
                      din, uo_out[0], uo_out[3:1]);
         end
     end
@@ -71,7 +71,7 @@ module tb;
         check_case(8'b11111111, 1, 3'b000); // all ones symmetric
         check_case(8'b01101001, 0, 3'b011); // not symmetric
 
-        $display("🎉 All test cases passed!");
+        $display("All test cases passed!");
         $finish;
     end
 
