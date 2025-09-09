@@ -5,42 +5,17 @@
 
 `default_nettype none
 
-module tt_um_symmetry_detector (
-    input  wire [7:0] ui_in,    // dedicated inputs
-    output wire [7:0] uo_out,   // dedicated outputs
-    input  wire [7:0] uio_in,   // bidirectional inputs (unused)
-    output wire [7:0] uio_out,  // bidirectional outputs (unused)
-    output wire [7:0] uio_oe,   // bidirectional enables (unused)
-    input  wire       clk,
-    input  wire       rst_n
-);
-
-    // Map control + data
-    wire        load    = ui_in[0];   // LSB = load pulse
-    wire [7:0]  data_in = ui_in;      // use all 8 bits as input word
-
-    wire symmetry, done, busy;
-
-    // Instantiate core
-    trial_symmetry_detector #(
-        .N(8)
-    ) core (
-        .clk(clk),
-        .rst_n(rst_n),
-        .load(load),
-        .data_in(data_in),
-        .symmetry(symmetry),
-        .done(done),
-        .busy(busy)
-    );
-
-    // Map outputs
-    assign uo_out[0]   = symmetry;
-    assign uo_out[1]   = done;
-    assign uo_out[2]   = busy;
-    assign uo_out[7:3] = 5'b00000; // unused
-
-    assign uio_out = 8'b00000000; // no bidir used
-    assign uio_oe  = 8'b00000000;
-
+module tt_chidam_symmetry_detector(out,i);
+  output out;
+  input [7:0]i;
+  wire [5:0]w;
+ 
+  xor x1(w[0],i[0],i[7]);
+  xor x2(w[1],i[1],i[6]);
+  xor x3(w[2],i[2],i[5]);
+  xor x4(w[3],i[3],i[4]);
+  and a1(w[4],~w[0],~w[1]);
+  and a2(w[5],~w[2],~w[3]);
+  and a3(out,w[4],w[5]);
+  
 endmodule
