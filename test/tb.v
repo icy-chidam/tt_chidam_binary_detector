@@ -35,7 +35,9 @@ module tb;
     );
     begin
         ui_in = din;
-        #20; // wait for DUT to process
+        #2;             // allow combinational logic to evaluate
+        @(posedge clk); // sync with clock
+        #2;             // settle again
 
         if (uo_out[0] !== expected_sym || uo_out[3:1] !== expected_mismatch) begin
             $display("ERROR: Input=%b | Expected sym=%b mismatch=%0d | Got sym=%b mismatch=%0d",
@@ -76,3 +78,4 @@ module tb;
     end
 
 endmodule
+
