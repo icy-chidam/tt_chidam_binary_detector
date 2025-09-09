@@ -47,5 +47,3 @@ If you don’t want to run all 256 inputs, you can just test a few key cases:
 In short: the easiest way is to *run the testbench* and confirm that the errors signal remains 0 after simulation.
 ## External hardware
 LED , Push Button
-
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
