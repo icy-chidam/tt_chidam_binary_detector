@@ -75,7 +75,7 @@ module tb ();
     ui_in = 8'b11111111;
     sym;
     
-    #10 $finish;
+    #10 ;
   end
     
   task sym;
