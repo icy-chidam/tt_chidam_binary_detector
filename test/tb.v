@@ -5,11 +5,13 @@ module tb;
 
   reg [7:0] i;
   wire sym;
+  wire [2:0] mismatch_count; // MUST connect this output
 
   // DUT instantiation
   symmetry_detector dut (
     .i(i),
-    .out(sym)
+    .out(sym),
+    .mismatch_count(mismatch_count) // connect all outputs
   );
 
   // Task for checking symmetry
@@ -31,10 +33,10 @@ module tb;
 
       // Display result
       if (sym !== expected_sym) begin
-        $display("ERROR: Input=%b | Expected sym=%0d | Got sym=%0d", in_val, expected_sym, sym);
+        $display("ERROR: Input=%b | Expected sym=%0d | Got sym=%0d | Mismatch=%0d", in_val, expected_sym, sym, mismatch_count);
         $fatal;
       end else begin
-        $display("PASS:  Input=%b | Sym=%0d", in_val, sym);
+        $display("PASS:  Input=%b | Sym=%0d | Mismatch=%0d", in_val, sym, mismatch_count);
       end
     end
   endtask
@@ -56,3 +58,4 @@ module tb;
   end
 
 endmodule
+
