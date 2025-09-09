@@ -1,4 +1,5 @@
 `default_nettype none
+`default_nettype none
 `timescale 1ns / 1ps
 
 /* This testbench just instantiates the module and makes some convenient wires
@@ -28,7 +29,7 @@ module tb ();
 `endif
 
   // Replace tt_um_example with your module name:
-  tt_um_example user_project (
+  tt_um_symmetry_detector user_project (
 
       // Include power ports for the Gate Level test:
 `ifdef GL_TEST
@@ -45,5 +46,47 @@ module tb ();
       .clk    (clk),      // clock
       .rst_n  (rst_n)     // not reset
   );
+
+  // Testbench stimulus
+  initial begin
+    // Initialize inputs
+    clk = 0;
+    rst_n = 0;
+    ena = 1;
+    ui_in = 8'b0;
+    uio_in = 8'b0;
+    
+    // Release reset after a few cycles
+    #20 rst_n = 1;
+    
+    // Run test cases
+    #10 ui_in = 8'b00000000;
+    sym;
+    
+    ui_in = 8'b11010011;
+    sym;
+    
+    ui_in = 8'b11000011;
+    sym;
+    
+    ui_in = 8'b10010110;
+    sym;
+    
+    ui_in = 8'b11111111;
+    sym;
+    
+    #10 $finish;
+  end
+    
+  task sym;
+    #10;
+    if (uo_out[0])
+      $display("The number %0b is symmetric", ui_in);
+    else 
+      $display("The number %0b is not symmetric", ui_in);
+    
+    $display("Number of bits mismatched = %0d", uo_out[3:1]);
+    $display("---");
+  endtask
 
 endmodule
