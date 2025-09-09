@@ -1,67 +1,90 @@
 `default_nettype none
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
-module tb;
+/* This testbench just instantiates the module and makes some convenient wires
+   that can be driven / tested by the cocotb test.py.
+*/
+module tb ();
 
-  reg [7:0] i;
-  wire sym;
-  wire [2:0] mismatch;
-
-  // DUT instantiation
-  symmetry_detector dut (
-    .i(i),
-    .out(sym),
-    .mismatch_count(mismatch)
-  );
-
-  // Task for checking symmetry
-  task check_case;
-    input [7:0] in_val;
-    reg expected_sym;
-    reg [2:0] expected_mismatch;
-    integer j;
-    begin
-      i = in_val;
-      #1; // combinational propagation
-
-      // Compute expected values
-      expected_sym = 1'b1;
-      expected_mismatch = 3'b0;
-      for (j=0; j<4; j=j+1) begin
-        if (in_val[j] !== in_val[7-j]) begin
-          expected_sym = 1'b0;
-          expected_mismatch = expected_mismatch + 1;
-        end
-      end
-
-      // Display result
-      if (sym !== expected_sym || mismatch !== expected_mismatch) begin
-        $display("ERROR: Input=%b | Expected sym=%0d mismatch=%0d | Got sym=%0d mismatch=%0d",
-                  in_val, expected_sym, expected_mismatch, sym, mismatch);
-        $fatal;
-      end else begin
-        $display("PASS:  Input=%b | Sym=%0d Mismatch=%0d", in_val, sym, mismatch);
-      end
-    end
-  endtask
-
+  // Dump the signals to a VCD file. You can view it with gtkwave or surfer.
   initial begin
     $dumpfile("tb.vcd");
     $dumpvars(0, tb);
-
-    $display("Starting Symmetry Detector Test...");
-
-    check_case(8'b10011001); // symmetric
-    check_case(8'b01101001); // not symmetric
-    check_case(8'b11111111); // symmetric
-    check_case(8'b00000000); // symmetric
-    check_case(8'b10101010); // not symmetric
-    check_case(8'b11001100); // not symmetric
-    check_case(8'b10000001); // symmetric
-
-    $display("All test cases passed!");
-    $finish;
+    #1;
   end
+
+  // Wire up the inputs and outputs:
+  reg clk;
+  reg rst_n;
+  reg ena;
+  reg [7:0] ui_in;
+  reg [7:0] uio_in;
+  wire [7:0] uo_out;
+  wire [7:0] uio_out;
+  wire [7:0] uio_oe;
+`ifdef GL_TEST
+  wire VPWR = 1'b1;
+  wire VGND = 1'b0;
+`endif
+
+  // Replace tt_um_example with your module name:
+  tt_um_symmetry_detector user_project (
+
+      // Include power ports for the Gate Level test:
+`ifdef GL_TEST
+      .VPWR(VPWR),
+      .VGND(VGND),
+`endif
+
+      .ui_in  (ui_in),    // Dedicated inputs
+      .uo_out (uo_out),   // Dedicated outputs
+      .uio_in (uio_in),   // IOs: Input path
+      .uio_out(uio_out),  // IOs: Output path
+      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
+      .ena    (ena),      // enable - goes high when design is selected
+      .clk    (clk),      // clock
+      .rst_n  (rst_n)     // not reset
+  );
+
+  // Testbench stimulus
+  initial begin
+    // Initialize inputs
+    clk = 0;
+    rst_n = 0;
+    ena = 1;
+    ui_in = 8'b0;
+    uio_in = 8'b0;
+    
+    // Release reset after a few cycles
+    #20 rst_n = 1;
+    
+    // Run test cases
+    #10 ui_in = 8'b00000000;
+    sym;
+    
+    ui_in = 8'b11010011;
+    sym;
+    
+    ui_in = 8'b11000011;
+    sym;
+    
+    ui_in = 8'b10010110;
+    sym;
+    
+    ui_in = 8'b11111111;
+    sym;
+  end
+    
+  task sym;
+    #10;
+    if (uo_out[0])
+      $display("The number %0b is symmetric", ui_in);
+    else 
+      $display("The number %0b is not symmetric", ui_in);
+    
+    $display("Number of bits mismatched = %0d", uo_out[3:1]);
+    $display("---");
+  endtask
 
 endmodule
 
